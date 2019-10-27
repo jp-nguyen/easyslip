@@ -2,6 +2,18 @@
   text-align: center;
 }
 
+body {
+  width: 100%;
+}
+
+table {
+  margin: 0px auto;
+}
+
+button {
+  background-color: blue;
+}
+
 .App-logo {
   height: 40vmin;
 }
@@ -14,6 +26,7 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
+  font-family: Verdana;
   color: white;
 }
 

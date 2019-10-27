@@ -29,21 +29,22 @@ def send_slip_worker(cred_info, env_info, document_name):
     1. Create the envelope request object
     2. Send the envelope
     """
-    # 1. Create the envelope request object
-    envelope_definition = make_envelope(env_info, document_name)
-
-    # 2. call Envelopes::create API method
-    # Exceptions will be caught by the calling function
     api_client = ApiClient()
     api_client.host = cred_info["base_path"]
     api_client.set_default_header("Authorization", "Bearer " + cred_info["ds_access_token"])
-
+    
+    workflow_details = AccountsApi(api_client)
+    workflow_response = workflow_details.get_account_identity_verification(cred_info["account_id"])
+    workflow_id = workflow_response.identity_verification[0].workflow_id
+    
+    
+    envelope_definition = make_envelope(env_info, document_name, workflow_id)
     envelopes_api = EnvelopesApi(api_client)
     result = envelopes_api.create_envelope(cred_info["account_id"], envelope_definition=envelope_definition)
     envelope_id = result.envelope_id
     return { "envelope_id" : envelope_id }
 
-def make_envelope(env_info, document_name):
+def make_envelope(env_info, document_name, workflow_id):
     """
     Creates envelope with a given document.
     Example env 
@@ -79,7 +80,8 @@ def make_envelope(env_info, document_name):
         email = env_info["signer_email"], 
         name = env_info["signer_name"],
         recipient_id = "1", 
-        routing_order = "1"
+        routing_order = "1",
+        identity_verification = { "workflowId" : workflow_id, "steps": "null" },
     )
 
     sign_here = SignHere(
