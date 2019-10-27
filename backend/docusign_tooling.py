@@ -140,16 +140,11 @@ def list_recipients(cred_info, envelope_id):
 
     return results
 
-def get_signed_pdfs(results):
+def get_signed_envelope_ids(results):
     """
-    1. Call the envelope recipients list method
-    2. Parse through to find the signed pdfs
+    1. Returns a list of envelope_ids where the status is completed, i.e. signed.
     """
-    # go through envelopes from results
-    print(results)
-    # for e in results.envelopes: 
-    #     if e.status == "completed":
-    #         print(e)
+    return [e.envelope_id for e in results.envelopes if e.status == "completed"]
 
 if __name__ == "__main__":
     cred_info = get_docusign_credentials()
@@ -163,5 +158,4 @@ if __name__ == "__main__":
     envelope_id = send_slip_worker(cred_info, env_info, document_name="permission-slip-final.pdf")
     print(envelope_id)
     results = list_recipients(cred_info, envelope_id["envelope_id"])
-    get_signed_pdfs(results)
-    # print(env_info)
+    print(get_signed_envelope_ids(results))
