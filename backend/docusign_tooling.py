@@ -67,10 +67,10 @@ def make_envelope(env_info, document_name, workflow_id):
 
     # Create the document models
     document = Document(  # create the DocuSign document object
-        document_base64=doc_b64,
-        name="Lorem Ipsum",  # can be different from actual file name
-        file_extension="pdf",  # many different document types are accepted
-        document_id="1"  # a label used to reference the doc
+        document_base64 =doc_b64,
+        name = ''.join(env_info["child_name"].split(' ')) + "_FieldTrip",  # can be different from actual file name
+        file_extension = "pdf",  # many different document types are accepted
+        document_id = "1" # a label used to reference the doc
     )
     # The order in the docs array determines the order in the envelope
     env.documents = [document]
@@ -82,6 +82,14 @@ def make_envelope(env_info, document_name, workflow_id):
         recipient_id = "1", 
         routing_order = "1",
         identity_verification = { "workflowId" : workflow_id, "steps": "null" },
+    )
+
+    # Create the CC recipient to receive a copy of the documents
+    cc = CarbonCopy(
+        email = env_info["cc_email"],
+        name = env_info["cc_name"],
+        recipient_id = "2", 
+        routing_order = "2"
     )
 
     sign_here = SignHere(
@@ -121,7 +129,10 @@ def make_envelope(env_info, document_name, workflow_id):
     )
 
     # Add the recipients to the envelope object
-    recipients = Recipients(signers = [signer])
+    recipients = Recipients(
+        signers = [signer],
+        carbon_copies = [cc]
+    )
     env.recipients = recipients
 
     # Request that the envelope be sent by setting |status| to "sent".
@@ -154,7 +165,9 @@ if __name__ == "__main__":
         "signer_email": os.getenv("SIGNER_EMAIL"),
         "signer_name": os.getenv("SIGNER_NAME"),
         "status": "sent",
-        "child_name": os.getenv("CHILD_NAME")
+        "child_name": os.getenv("CHILD_NAME"),
+        "cc_email": os.getenv("CC_EMAIL"),
+        "cc_name": os.getenv("CC_NAME")
     }
     print(cred_info)
     envelope_id = send_slip_worker(cred_info, env_info, document_name="permission-slip-final.pdf")
