@@ -23,6 +23,33 @@ class PermissionSlipPrompt extends React.Component {
   }
 }
 
+class StudentTable extends React.Component {
+  constructor() {
+    super();
+    this.columns = React.useMemo(
+      () => [
+        {
+          Header: 'Name',
+          accessor: 'name'
+        },
+        {
+          Header: 'Signed',
+          accessor: 'signed'
+        },
+        {
+          Header: 'Due',
+          accessor: 'due'
+        }
+      ]
+    );
+  }
+  render() {
+    return (
+      <div></div>
+    );
+  }
+}
+
 function Table({ columns, data }) {
   const {
     getTableProps,
@@ -35,7 +62,7 @@ function Table({ columns, data }) {
     data
   });
 
-  return(
+  return (
     <table {...getTableProps()}>
       <thead>
         {headerGroups.map(headerGroup => (
@@ -52,9 +79,60 @@ function Table({ columns, data }) {
             prepareRow(row) || (
               <tr {...row.getRowProps()}>
                 {row.cells.map(cell => {
-                  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                  return (
+                    <td {...cell.getCellProps()}>
+                      {cell.render('Cell')}
+                    </td>
+                  );
                 })}
               </tr>
+            )
+        )}
+      </tbody>
+    </table>
+  );
+}
+
+function Dashboard({ columns, data }) {
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+  } = useTable({
+    columns,
+    data
+  });
+
+  return (
+    <table {...getTableProps()}>
+      <thead>
+        {headerGroups.map(headerGroup => (
+          <tr {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map(column => (
+              <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody {...getTableBodyProps()}>
+        {rows.map(
+          (row, i) =>
+            prepareRow(row) || (
+              <Popup trigger={
+                <tr {...row.getRowProps()}>
+                  {row.cells.map(cell => {
+                    return (
+                      <td {...cell.getCellProps()}>
+                        {cell.render('Cell')}
+                      </td>
+                    );
+                  })}
+                </tr>
+              } modal >
+                <Table />
+              </Popup>
             )
         )}
       </tbody>
@@ -103,7 +181,7 @@ function App() {
       <Popup trigger={<button className="button">new</button>} modal>
         <PermissionSlipPrompt />
       </Popup>
-      <Table columns={columns} data={data} />
+      <Dashboard columns={columns} data={data} />
     </div>
   );
 }
