@@ -8,6 +8,7 @@ from os import path
 import csv
 from docusign_tooling import send_slip_worker, get_docusign_credentials
 from dotenv import load_dotenv
+from bson import ObjectId
 
 load_dotenv()
 #paths
@@ -20,9 +21,7 @@ db = client['easy-slip-database']
 
 app = Flask(__name__)
 CORS(app)
-# @app.route('/', methods=['GET', 'POST'])
-# def allowed_file(filename):
-#     return '.' in filename and \filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
     
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -36,9 +35,6 @@ def upload():
     csv_name = secure_filename(csv_file.filename)
     csv_file.save(os.path.join("static/csv_files", uniq_csv_name))
 
-        # TODO: make unique id for document and csv
-        # store the information to the database
-    #collection of permission_slip drafts
     slip = {
         "pdf": uniq_pdf_name,
         "csv": uniq_csv_name,
@@ -53,8 +49,8 @@ def upload():
         "id": str(slip_id),
     }
 
-@app.route('/slips', methods= ['GET'])
-def slips():
+@app.route('/perm_slips', methods= ['GET'])
+def perm_slip():
     slips = db.slips
     result = []
     for slip in slips.find({}):
@@ -64,24 +60,25 @@ def slips():
     return {"slips": result}
 
 
-@app.route('/slips/<slip_id>')
-def sendSlip(slip_id, methods= ['GET']):
-    
-    
-    slip = pymongo.find({"_id": slip_id})
+@app.route('/perm_slips/<perm_slip_id>')
+def sendSlip(perm_slip_id, methods= ['GET']):
+    print(perm_slip_id)
+    slip = db.slips.find_one({"_id": ObjectId(perm_slip_id)})
     fullname = path.join(csv_path, slip["csv"])
     cred_info = get_docusign_credentials()
     
-    input_file = csv.DictReader(open(slip["csv"]))
+    input_file = csv.DictReader(open(fullname))
     for row in input_file:
         env_info = {
             "signer_email":row["parent_email"],
             "signer_name": row["parent_name"],
             "status": "sent",
-            "child_name": row["student_name"]
+            "child_name": row["student_name"],
+            "cc_name": os.getenv("CC_NAME"),
+            "cc_email": os.getenv("CC_EMAIL")
         }
         document_name = path.join(pdf_path, slip["pdf"])
-        send_slip_worker(cred_info, env_info, document_name)
+        print(send_slip_worker(cred_info, env_info, document_name))
     return {"msg": "envelops sent"}
 
 @app.route('/signers', methods=['GET'])
