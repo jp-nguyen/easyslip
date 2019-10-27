@@ -16,7 +16,6 @@ class PermissionSlipPrompt extends React.Component {
     event.preventDefault();
     const data = new FormData()
     const {selectedPdfFile, selectedCsvFile} = this.state
-    console.log(this.state)
     data.append("permission_slip", this.state.selectedPdfFile)
     data.append("csv_file", this.state.selectedCsvFile)
 
