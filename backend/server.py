@@ -3,18 +3,11 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os
 import uuid
+from pymongo import MongoClient
 
 #databases
-from sqlalchemy import create_engine
-
-
-#database setting up
-# Create an engine to communicate with the database. The
-# "cockroachdb://" prefix for the engine URL indicates that we are
-# connecting to CockroachDB using the 'cockroachdb' dialect.
-engine = create_engine(
-    'cockroachdb://bk:123@aws-us-east-1.easyslip-1.crdb.io:26257/easyslipdb?sslmode=verify-full&sslrootcert=/Users/frenielzabala/projects/easyslip/backend/easyslip-1-ca.crt',
-)
+client = MongoClient('localhost', 27017)
+db = client['easy-slip-database']
 
 app = Flask(__name__)
 CORS(app)
@@ -36,8 +29,15 @@ def upload():
 
         # TODO: make unique id for document and csv
         # store the information to the database
-
-    return {"msg": "sent"}
+    #collection of permission_slip drafts
+    slip = {
+        "pdf": uniq_pdf_name,
+        "csv": uniq_csv_name,
+        "name": "example_name"
+    }
+    slips = db.slips
+    slip_id = slips.inserte_one(slip).inserted_id
+    return {"msg": slip_id}
 
 @app.route('/slips', methods= ['GET'])
 def slips():
