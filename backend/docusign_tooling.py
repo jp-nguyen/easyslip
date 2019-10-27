@@ -41,7 +41,7 @@ def send_slip_worker(cred_info, env_info, document_name):
     envelopes_api = EnvelopesApi(api_client)
     result = envelopes_api.create_envelope(cred_info["account_id"], envelope_definition=envelope_definition)
     envelope_id = result.envelope_id
-    return {"envelope_id": envelope_id}
+    return { "envelope_id" : envelope_id }
 
 def make_envelope(env_info, document_name):
     """
@@ -56,7 +56,7 @@ def make_envelope(env_info, document_name):
     """
     # create the envelope definition
     env = EnvelopeDefinition(
-        email_subject="Please sign this document set"
+        email_subject="EasySlip: Please sign this document!"
     )
    
     # The reads could raise an exception if the file is not available!
@@ -76,26 +76,50 @@ def make_envelope(env_info, document_name):
 
     # Create the signer recipient model
     signer = Signer(
-        email= env_info["signer_email"], name=env_info["signer_name"] ,
-        recipient_id="1", routing_order="1"
+        email = env_info["signer_email"], 
+        name = env_info["signer_name"],
+        recipient_id = "1", 
+        routing_order = "1"
     )
 
     sign_here = SignHere(
-        anchor_string = "/sn1/", anchor_units = "pixels",
-        anchor_y_offset = "0", anchor_x_offset = "0")
+        anchor_string = "/sn1/", 
+        anchor_units = "pixels",
+        anchor_y_offset = "0", 
+        anchor_x_offset = "0"
+    )
 
-    parent_full_name = FullName(name= env_info["signer_name"],
-            anchor_string="/pn0/",anchor_units = "pixels",
-        anchor_y_offset = "10", anchor_x_offset = "20")
+    parent_full_name = FullName(
+        anchor_string = "/pn0/",
+        anchor_units = "pixels",
+        anchor_y_offset = "-5",
+        anchor_x_offset = "-10"
+    )
     
-    child_full_name = FullName(name=env_info["child_name"],
-            anchor_string="/cn0/",anchor_units = "pixels",
-        anchor_y_offset = "10", anchor_x_offset = "20")
+    child_full_name = Text(
+        value = env_info["child_name"],
+        anchor_string = "/cn0/",
+        anchor_units = "pixels",
+        anchor_y_offset = "-5", 
+        anchor_x_offset = "-10"
+    )
 
-    signer.tabs = Tabs(sign_here_tabs=[sign_here], full_name_tabs=[parent_full_name, child_full_name])
+    current_date = DateSigned(
+        anchor_string = "/dn1/",
+        anchor_units = "pixels",
+        anchor_y_offset = "0", 
+        anchor_x_offset = "-25"
+    )
+
+    signer.tabs = Tabs(
+        sign_here_tabs = [sign_here], 
+        full_name_tabs = [parent_full_name],
+        text_tabs = [child_full_name],
+        date_signed_tabs= [current_date]
+    )
 
     # Add the recipients to the envelope object
-    recipients = Recipients(signers=[signer])
+    recipients = Recipients(signers = [signer])
     env.recipients = recipients
 
     # Request that the envelope be sent by setting |status| to "sent".
@@ -116,6 +140,17 @@ def list_recipients(cred_info, envelope_id):
 
     return results
 
+def get_signed_pdfs(results):
+    """
+    1. Call the envelope recipients list method
+    2. Parse through to find the signed pdfs
+    """
+    # go through envelopes from results
+    print(results)
+    # for e in results.envelopes: 
+    #     if e.status == "completed":
+    #         print(e)
+
 if __name__ == "__main__":
     cred_info = get_docusign_credentials()
     env_info = {
@@ -124,8 +159,9 @@ if __name__ == "__main__":
         "status": "sent",
         "child_name": os.getenv("CHILD_NAME")
     }
-    envelope_id = send_slip_worker(cred_info, env_info, document_name="example_doc.pdf")
+    print(cred_info)
+    envelope_id = send_slip_worker(cred_info, env_info, document_name="permission-slip-final.pdf")
     print(envelope_id)
-    print(list_recipients(cred_info, envelope_id["envelope_id"]))
-
-
+    results = list_recipients(cred_info, envelope_id["envelope_id"])
+    get_signed_pdfs(results)
+    # print(env_info)
