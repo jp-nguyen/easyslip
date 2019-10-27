@@ -8,10 +8,18 @@ body {
 
 table {
   margin: 0px auto;
+  padding: 30px;
 }
 
 button {
-  background-color: blue;
+  margin: 10%;
+  float: right;
+  background-color: #309CCD;
+  color: white;
+  font-size: 15pt;
+  border-radius: 8px;
+  width: 110px;
+  height: 45px;
 }
 
 .App-logo {
@@ -42,11 +50,9 @@ button {
   display: table-row;
 }
 
-.name, 
-.viewed, 
+.name,
+.viewed,
 .signed,
 .due {
   display: table-cell;
 }
-
-

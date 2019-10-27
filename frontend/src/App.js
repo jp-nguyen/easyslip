@@ -4,6 +4,7 @@ import { useTable } from "react-table";
 import './App.css';
 import axios from 'axios';
 
+
 class PermissionSlipPrompt extends React.Component {
   constructor(props) {
     super(props);
@@ -19,7 +20,7 @@ class PermissionSlipPrompt extends React.Component {
     data.append("permission_slip", this.state.selectedPdfFile)
     data.append("csv_file", this.state.selectedCsvFile)
 
-    axios.post("http://localhost:5000/upload", data, { 
+    axios.post("http://localhost:5000/upload", data, {
       // receive two    parameter endpoint url ,form data
     })
     .then(res => { // then print response status
@@ -46,7 +47,7 @@ class PermissionSlipPrompt extends React.Component {
 //   onClickHandler = () => {
 //    const data = new FormData()
 //    data.append('file', this.state.selectedFile)
-//    axios.post("http://localhost:8000/upload", data, { 
+//    axios.post("http://localhost:8000/upload", data, {
 //       // receive two    parameter endpoint url ,form data
 //   })
 // }
@@ -227,6 +228,7 @@ function App() {
 
   return (
     <div>
+      <img src={ require("./images/easysliplogo.png")} style={{width: "auto", height: 120 + "px"}}/>
       <Popup trigger={<button className="button">new</button>} modal>
         <PermissionSlipPrompt />
       </Popup>
