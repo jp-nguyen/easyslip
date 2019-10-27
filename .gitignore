@@ -22,8 +22,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 backend/.env
+
 #python
 */venv/*
 
 #vscode
 .vscode
+
+#cockroachdb
+/database/easyslip-1-ca.crt 
