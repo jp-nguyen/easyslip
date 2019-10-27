@@ -20,3 +20,20 @@
 .App-link {
   color: #09d3ac;
 }
+
+.prompt-label {
+  display: block
+}
+
+.row {
+  display: table-row;
+}
+
+.name, 
+.viewed, 
+.signed,
+.due {
+  display: table-cell;
+}
+
+
