@@ -11,7 +11,13 @@ table {
 }
 
 button {
-  background-color: blue;
+  background-color: #1c9DD1;
+  color: white
+}
+
+img {
+  width: auto;
+  height: 128px
 }
 
 .App-logo {

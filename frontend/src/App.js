@@ -112,6 +112,7 @@ class Dashboard  extends React.Component {
 function App() {
   return (
     <div>
+      <img src={require("./images/easysliplogo.png")}></img>
       <Popup trigger={<button className="button">new</button>} modal>
         <PermissionSlipPrompt />
       </Popup>
