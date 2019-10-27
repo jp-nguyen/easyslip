@@ -88,12 +88,19 @@ class Dashboard  extends React.Component {
 
   render(){
     const {slips} = this.state
-    const items = slips.map((data, index) => {return <tr><td>document {index + 1}</td><td><button id="addBtn"  onClick={() => this.sendStuff(data._id)}>Send</button></td>
+    const items = slips.map((data, index) => {return <tr><td>document {index + 1} <button id="addBtn"  onClick={() => this.sendStuff(data._id)}>Send</button></td>
     </tr>})
     return (
       <div>
-          <table>
-              {items}
+          <table className="table table-dark m-4">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items}
+          </tbody>
           </table>
           {/* <button id="addBtn" onClick={addRow}>ADD</button> */}
       </div>
