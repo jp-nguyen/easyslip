@@ -14,7 +14,6 @@ from sqlalchemy import create_engine
 # connecting to CockroachDB using the 'cockroachdb' dialect.
 engine = create_engine(
     'cockroachdb://bk:123@aws-us-east-1.easyslip-1.crdb.io:26257/easyslipdb?sslmode=verify-full&sslrootcert=/Users/frenielzabala/projects/easyslip/backend/easyslip-1-ca.crt',
-    echo=True   
 )
 
 app = Flask(__name__)
@@ -25,25 +24,15 @@ CORS(app)
     
 @app.route('/upload', methods=['POST'])
 def upload():
-    if request.method == 'POST':
-        pdf_file = request.files['permission_slip']
-        csv_file = request.files["csv_file"]
-        
-        # if file.filename == '':
-        #     flash('No selected file')
-        #     return redirect(request.url)
-        # if file and allowed_file(file.filename):
-        #     filename = secure_filename(file.filename)
-        #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        #     return redirect(url_for('uploaded_file',
-        #                             filename=filename))
-
-        uniq_pdf_name = str(uuid.uuid4())
-        uniq_csv_name = str(uuid.uuid4())
-        pdf_name = secure_filename(pdf_file.filename)
-        pdf_file.save(os.path.join("static/documents", uniq_pdf_name))
-        csv_name = secure_filename(csv_file.filename)
-        csv_file.save(os.path.join("static/csv_files", uniq_csv_name))
+    pdf_file = request.files['permission_slip']
+    csv_file = request.files["csv_file"]
+    
+    uniq_pdf_name = str(uuid.uuid4())
+    uniq_csv_name = str(uuid.uuid4())
+    pdf_name = secure_filename(pdf_file.filename)
+    pdf_file.save(os.path.join("static/documents", uniq_pdf_name))
+    csv_name = secure_filename(csv_file.filename)
+    csv_file.save(os.path.join("static/csv_files", uniq_csv_name))
 
         # TODO: make unique id for document and csv
         # store the information to the database
