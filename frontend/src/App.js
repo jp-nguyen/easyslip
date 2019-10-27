@@ -2,20 +2,70 @@ import React from "react";
 import Popup from "reactjs-popup";
 import { useTable } from "react-table";
 import './App.css';
+import axios from 'axios';
 
 class PermissionSlipPrompt extends React.Component {
+  constructor(props) {
+    super(props);
+      this.state = {
+        selectedPdfFile: null,
+        selectedCsvFile: null,
+      }
+  }
+  handleSubmit = (event) =>{
+    event.preventDefault();
+    const data = new FormData()
+    const {selectedPdfFile, selectedCsvFile} = this.state
+    console.log(this.state)
+    data.append("permission_slip", this.state.selectedPdfFile)
+    data.append("csv_file", this.state.selectedCsvFile)
+
+    axios.post("http://localhost:5000/upload", data, { 
+      // receive two    parameter endpoint url ,form data
+    })
+    .then(res => { // then print response status
+      console.log(res.statusText)
+    }).catch( err => {
+      console.log("something went wrong")
+    })
+  }
+
+  onChangeHandlerPDF = event =>{
+    console.log(event.target.files)
+    this.setState({
+      selectedPdfFile: event.target.files[0],
+    })
+  }
+
+  onChangeHandlerCSV = event => {
+    console.log(event.target.files)
+    this.setState({
+      selectedCsvFile: event.target.files[0],
+    })
+  }
+
+//   onClickHandler = () => {
+//    const data = new FormData()
+//    data.append('file', this.state.selectedFile)
+//    axios.post("http://localhost:8000/upload", data, { 
+//       // receive two    parameter endpoint url ,form data
+//   })
+// }
+
+
+
   render() {
     return (
       <div className="prompt">
-        <form>
-          <label className="prompt-label" for="name">Name</label>
-          <input type="text" name="name"></input>
+        <form onSubmit={this.handleSubmit}>
+          {/* <label className="prompt-label" for="name">Name</label> */}
+          {/* <input type="text" name="name"></input> */}
           <label className="prompt-label" for="slip">Permission Slip (PDF)</label>
-          <input type="file" name="slip" accept=".pdf"></input>
+          <input type="file" className="form-control" name="file" accept=".pdf" onChange={this.onChangeHandlerPDF}></input>
           <label className="prompt-label" for="emails">Emails (CSV)</label>
-          <input type="file" name="emails" accept=".csv"></input>
-          <label className="prompt-label" for="due-date">Due Date</label>
-          <input type="date" name="due-date"></input>
+          <input type="file" name="emails" accept=".csv" onChange={this.onChangeHandlerCSV}></input>
+          {/* <label className="prompt-label" for="due-date">Due Date</label> */}
+          {/* <input type="date" name="due-date"></input> */}
           <button type="submit">submit</button>
         </form>
       </div>
